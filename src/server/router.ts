@@ -1,15 +1,11 @@
 import * as trpc from "@trpc/server";
-import { z } from "zod";
 import { hash } from "argon2";
 
 import { Context } from "./context";
+import { signUpSchema } from "../common/validation/auth";
 
 export const serverRouter = trpc.router<Context>().mutation("signup", {
-  input: z.object({
-    username: z.string(),
-    email: z.string(),
-    password: z.string(),
-  }),
+  input: signUpSchema,
   resolve: async ({ input, ctx }) => {
     const { username, email, password } = input;
 
