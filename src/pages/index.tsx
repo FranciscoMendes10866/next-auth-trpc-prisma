@@ -49,7 +49,7 @@ const Home: NextPage = () => {
                 <Link href="/sign-up" className="link">
                   Go to sign up
                 </Link>
-                <button className="btn btn-primary" type="submit">
+                <button className="btn btn-secondary" type="submit">
                   Login
                 </button>
               </div>

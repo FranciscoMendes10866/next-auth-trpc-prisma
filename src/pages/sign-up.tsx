@@ -65,7 +65,7 @@ const SignUp: NextPage = () => {
                 <Link href="/" className="link">
                   Go to login
                 </Link>
-                <button className="btn btn-primary" type="submit">
+                <button className="btn btn-secondary" type="submit">
                   Sign Up
                 </button>
               </div>
