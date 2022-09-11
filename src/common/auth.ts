@@ -60,11 +60,12 @@ export const nextAuthOptions: NextAuthOptions = {
     },
   },
   jwt: {
-    secret: "super-secret",
+   
     maxAge: 15 * 24 * 30 * 60, // 15 days
   },
   pages: {
     signIn: "/",
     newUser: "/sign-up",
   },
+  secret: "super-secret",
 };
