@@ -17,50 +17,48 @@ export const nextAuthOptions: NextAuthOptions = {
         },
         password: { label: "Password", type: "password" },
       },
-      authorize: async (credentials, request) => {
-        const creds = await loginSchema.parseAsync(credentials);
+      authorize: async (credentials) => {
+        try {
+          const { email, password } = await loginSchema.parseAsync(credentials);
 
-        const user = await prisma.user.findFirst({
-          where: { email: creds.email },
-        });
+          const result = await prisma.user.findFirst({
+            where: { email },
+          });
 
-        if (!user) {
+          if (!result) return null;
+
+          const isValidPassword = await verify(result.password, password);
+
+          if (!isValidPassword) return null;
+
+          return { id: result.id, email, username: result.username };
+        } catch {
           return null;
         }
-
-        const isValidPassword = await verify(user.password, creds.password);
-
-        if (!isValidPassword) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-        };
       },
     }),
   ],
   callbacks: {
     jwt: async ({ token, user }) => {
       if (user) {
-        token.id = user.id;
+        token.userId = user.id;
         token.email = user.email;
+        token.username = user.username;
       }
 
       return token;
     },
     session: async ({ session, token }) => {
       if (token) {
-        session.id = token.id;
+        session.user.userId = token.userId;
+        session.user.email = token.email;
+        session.user.username = token.username;
       }
-
+   
       return session;
     },
   },
   jwt: {
-   
     maxAge: 15 * 24 * 30 * 60, // 15 days
   },
   pages: {

@@ -1,11 +1,17 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
+import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
-import { withTRPC } from "@trpc/next";
 
-import { ServerRouter } from "../server/router";
+import { trpc } from "../common/trpc";
 
-const App = ({ Component, pageProps }: AppProps) => {
+interface CustomAppProps extends AppProps {
+  pageProps: {
+    session?: Session;
+  } & AppProps["pageProps"];
+}
+
+const CustomApp = ({ Component, pageProps }: CustomAppProps) => {
   return (
     <SessionProvider session={pageProps.session}>
       <Component {...pageProps} />
@@ -13,18 +19,4 @@ const App = ({ Component, pageProps }: AppProps) => {
   );
 };
 
-export default withTRPC<ServerRouter>({
-  config({ ctx }) {
-    const url = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}/api/trpc`
-      : "http://localhost:3000/api/trpc";
-
-    return {
-      url,
-      headers: {
-        "x-ssr": "1",
-      },
-    };
-  },
-  ssr: true,
-})(App);
+export default trpc.withTRPC(CustomApp);
