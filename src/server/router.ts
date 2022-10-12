@@ -1,12 +1,13 @@
-import * as trpc from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import { hash } from "argon2";
 
-import { Context } from "./context";
+import { IContext } from "./context";
 import { signUpSchema } from "../common/validation/auth";
 
-export const serverRouter = trpc.router<Context>().mutation("signup", {
-  input: signUpSchema,
-  resolve: async ({ input, ctx }) => {
+const t = initTRPC.context<IContext>().create();
+
+export const serverRouter = t.router({
+  signup: t.procedure.input(signUpSchema).mutation(async ({ input, ctx }) => {
     const { username, email, password } = input;
 
     const exists = await ctx.prisma.user.findFirst({
@@ -14,7 +15,7 @@ export const serverRouter = trpc.router<Context>().mutation("signup", {
     });
 
     if (exists) {
-      throw new trpc.TRPCError({
+      throw new TRPCError({
         code: "CONFLICT",
         message: "User already exists.",
       });
@@ -31,7 +32,7 @@ export const serverRouter = trpc.router<Context>().mutation("signup", {
       message: "Account created successfully",
       result: result.email,
     };
-  },
+  }),
 });
 
-export type ServerRouter = typeof serverRouter;
+export type IServerRouter = typeof serverRouter;

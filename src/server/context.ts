@@ -5,7 +5,7 @@ import { unstable_getServerSession } from "next-auth";
 import { prisma } from "../common/prisma";
 import { nextAuthOptions } from "../common/auth";
 
-export async function createContext(ctx: trpcNext.CreateNextContextOptions) {
+export const createContext = async (ctx: trpcNext.CreateNextContextOptions) => {
   const { req, res } = ctx;
   const session = await unstable_getServerSession(req, res, nextAuthOptions);
 
@@ -15,6 +15,6 @@ export async function createContext(ctx: trpcNext.CreateNextContextOptions) {
     session,
     prisma,
   };
-}
+};
 
-export type Context = trpc.inferAsyncReturnType<typeof createContext>;
+export type IContext = trpc.inferAsyncReturnType<typeof createContext>;
